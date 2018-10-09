@@ -13,7 +13,6 @@ import ResultList from './search/resultList'
 import WqResultList from './search/wqResultList'
 import SmaqResultList from './search/smaqResultList'
 import ResultDetail from './search/resultDetail'
-import EchartsManage from './search/echarts'
 import MySettings from './mySettings/index'
 import MessageManage from './mySettings/message'
 import MySearch from './mySettings/mySearch'
@@ -112,9 +111,6 @@ const BridgeScreen = ({ navigation }) => (
 const StatisticsScreen = ({ navigation }) => (
   <Statistics navigation={navigation} />
 );
-const EchartsScreen = ({ navigation }) => (
-  <EchartsManage navigation={navigation} />
-);
 const ResultScreen = ({ navigation }) => (
   <ResultList navigation={navigation} />
 );
@@ -196,12 +192,6 @@ const StactNavigatorDemo = StackNavigator({
     screen: ResultScreen,
     navigationOptions: {
       headerTitle: '查询项目',
-    },
-  },
-  EchartsManage: {
-    screen: EchartsScreen,
-    navigationOptions: {
-      headerTitle: '图表',
     },
   },
   MySettingsManage: {

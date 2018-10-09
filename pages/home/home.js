@@ -35,24 +35,30 @@ export default class App extends Component {
     }
     this.makerImgs = []
   }
-  componentWillMount() {
+  componentWillMount = async () => {
     // this._GetAsyncStorageBridgeList()
     this.state.url = "http://demo.d9tec.com/api/app/getxfqlxxs"
-    this._GetUserInfo()
+    try {
+      var value = await AsyncStorage.getItem("token");
+      if (value) {
+        console.log('maps:' + value)
+        this.setState({ token: value });
+        this._GetBridgeList()
+      } else {
+        this.props.navigation.navigate('Login')
+      }
+    } catch (error) {
+    }
   }
   componentDidMount() {
-    // this.eventEmitter = DeviceEventEmitter.addListener('updateMakers', (e) => {
-    //   this.updateMakersBridgeList(e)
-    // });
-    // this.updateMakersTemp()
-    navigator.geolocation.getCurrentPosition(
-      location => {
-        this.setState({
-          curcoordinate: { latitude: location.coords.latitude, longitude: location.coords.longitude }
-        })
-      },
-      error => { }
-    )
+    // navigator.geolocation.getCurrentPosition(
+    //   location => {
+    //     this.setState({
+    //       curcoordinate: { latitude: location.coords.latitude, longitude: location.coords.longitude }
+    //     })
+    //   },
+    //   error => { }
+    // )
   }
   componentWillReceiveProps(obj) {
     this.state.token = obj.navigation.state.params.token
@@ -62,32 +68,18 @@ export default class App extends Component {
 
   }
   updateMakersBridgeList() {
-    if (!this.state.bridgeList && this.state.bridgeList.length <= 0) {
+    if (!this.state.bridgeList || this.state.bridgeList.length <= 0) {
       return
     }
     this.state.bridgeList.forEach((item) => {
       if (item.Gcjd && item.Gcjd.length > 0) {
         let temp = item.Gcjd[0]
         if (temp.JingDu && temp.WeiDu) {
-          // this.makerImgs.push(<MapView.Marker
-          //   key={temp.Id}
-          //   title={item.QLMC}
-          //   ref={ref => {
-          //     this.marker = ref
-          //   }}
-          //   icon={() => (
-          //     <Image style={styles.customMarker} source={require('../images/flag.png')}
-          //       onLoad={() => {
-          //         this.marker.sendCommand('update')
-          //       }}
-          //     />
-          //   )}
-          //   onPress={() => this._onMarkerPressTemp()}
-          //   coordinate={{ latitude: 40.1498, longitude: 116.288 }}
-          // />)
-
-
-
+          if (!this.state.curcoordinate.latitude) {
+            this.setState({
+              curcoordinate: { latitude: Number(temp.WeiDu), longitude: Number(temp.JingDu) }
+            })
+          }
           this.makerImgs.push(<MapView.Marker
             key={temp.Id}
             title={item.QLMC}
@@ -101,6 +93,11 @@ export default class App extends Component {
         }
       }
     })
+    if (!this.state.curcoordinate.latitude) {
+      this.setState({
+        curcoordinate: { latitude: 114.31, longitude: 30.52 }
+      })
+    }
     this.setState({ makerImgs: this.makerImgs })
     // setTimeout(() => {
     //   this.marker.sendCommand('update')
@@ -147,8 +144,8 @@ export default class App extends Component {
         if (response.status == 401) {
           this.props.navigation.navigate('Login')
         } else {
-          this._GetBridgeList()
           console.log('getUserInfo:' + JSON.stringify(response.json()))
+          this._GetBridgeList()
         }
       })
       .catch(error => {
@@ -225,13 +222,12 @@ export default class App extends Component {
         "Content-Type": "application/json"
       }
     })
-      .then(response => response.json())
-      .then(responseJson => {
-        console.log('_UpdateBridgeList:' + JSON.stringify(responseJson.Result))
-        if (!responseJson) {
+      .then(response => {
+        if (response.status == 401) {
           this.props.navigation.navigate('Login')
         } else {
-          this.state.bridgeList = responseJson.Result
+          console.log('_UpdateBridgeList:' + response._bodyInit)
+          this.state.bridgeList = JSON.parse(response._bodyInit).Result
           this.updateMakersBridgeList()
         }
       })
@@ -296,7 +292,7 @@ export default class App extends Component {
             <Image style={styles.avatar} source={require('../images/myicon.png')} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.tpText} onPress={this.onEntryManage}>
-            <Text style={{ left: 50, position: 'absolute', fontSize: 17, color: 'black' }}> 搜索项目</Text>
+            <Text style={{ left: 0, position: 'absolute', fontSize: 17, color: 'black' }}> 搜索项目</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.makerContainer} ref="makerContainer" >

@@ -30,7 +30,8 @@ export default class SignInPage extends Component {
     _handleBack() {
         this.state.timeid = setTimeout(() => {
             this.setState({ visible: true })
-        }, 2000);
+        }, 1000);
+        this._Login()
     }
     _Login() {
         fetch("http://demo.d9tec.com/token", {
@@ -113,7 +114,7 @@ export default class SignInPage extends Component {
                     </View>
                 </View>
                 <View style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}>
-                    <Spinner style={styles.spinner} visible={this.state.visible} textContent={"登录中..."} textStyle={{ color: '#FFF' }} />
+                    <Spinner style={styles.spinner} visible={this.state.visible} />
                 </View>
             </Image>
         );
@@ -204,7 +205,6 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: 'white',
         marginTop: 10,
-        color: 'white',
         width: Dimensions.get('window').width - 100,
     }
 });

@@ -44,8 +44,8 @@ export default class Search extends Component {
   _searchSmaqResult() {
     this.props.navigation.navigate('SmaqResultList')
   }
-  _redirectStatistics() {
-    this.props.navigation.navigate('StatisticsManage')
+  _redirectStatistics(type) {
+    this.props.navigation.navigate('StatisticsManage', { type: type })
   }
 
   render() {
@@ -59,7 +59,7 @@ export default class Search extends Component {
             </View>
           </TouchableOpacity>
           <View style={styles.btn2}>
-            <TouchableOpacity style={styles.btnmargin} onPress={() => { this._redirectStatistics() }}>
+            <TouchableOpacity style={styles.btnmargin} onPress={() => { this._redirectStatistics('dzxgc') }}>
               <Image style={styles.cj5Down} source={require('../images/icon-chart.png')} />
               <Text style={styles.textDown} >图表</Text>
             </TouchableOpacity>
@@ -73,7 +73,7 @@ export default class Search extends Component {
             </View>
           </TouchableOpacity>
           <View style={styles.btn2}>
-            <TouchableOpacity style={styles.btnmargin} onPress={() => { this._redirectStatistics() }}>
+            <TouchableOpacity style={styles.btnmargin} onPress={() => { this._redirectStatistics('smaqgc') }}>
               <Image style={styles.cj5Down} source={require('../images/icon-chart.png')} />
               <Text style={styles.textDown} >图表</Text>
             </TouchableOpacity>
@@ -85,7 +85,7 @@ export default class Search extends Component {
             <Text style={styles.text} >危桥改造工程进度</Text>
           </TouchableOpacity>
           <View style={styles.btn2}>
-            <TouchableOpacity style={styles.btnmargin} onPress={() => this._redirectStatistics()}>
+            <TouchableOpacity style={styles.btnmargin} onPress={() => this._redirectStatistics('wqgzgc')}>
               <Image style={styles.cj5Down} source={require('../images/icon-chart.png')} />
               <Text style={styles.textDown} >图表</Text>
             </TouchableOpacity>
@@ -97,7 +97,7 @@ export default class Search extends Component {
             <Text style={styles.text} >灾害防治工程进度</Text>
           </TouchableOpacity>
           <View style={styles.btn2}>
-            <TouchableOpacity style={styles.btnmargin} onPress={() => this._redirectStatistics()}>
+            <TouchableOpacity style={styles.btnmargin} onPress={() => this._redirectStatistics('zhfzgc')}>
               <Image style={styles.cj5Down} source={require('../images/icon-chart.png')} />
               <Text style={styles.textDown} >图表</Text>
             </TouchableOpacity>

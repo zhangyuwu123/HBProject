@@ -4,16 +4,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  Geolocation,
-  AsyncStorage,
-  TextInput,
-  Button,
-  ToastAndroid,
   Image,
   TouchableHighlight,
   TouchableNativeFeedback,
+  TouchableOpacity,
   View,
 } from 'react-native'
+import { Modal } from 'react-native';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 let Touchable = TouchableHighlight
 if (Platform.OS === 'android') {
@@ -26,7 +24,10 @@ export default class CjsjDetail extends Component {
     this.state = {
       token: '',
       id: '',
+      clickIndex: 0,
+      modalVisible: false,
       cjsj: {},
+      images: [],
     }
   }
   componentDidMount() {
@@ -48,7 +49,27 @@ export default class CjsjDetail extends Component {
     n = n.toString()
     return n[1] ? n : '0' + n
   }
+  _closeModal() {
+    this.setState({
+      modalVisible: false
+    });
+  }
+  viewImg(item) {
+    let index = 0
+    let temp = this.state.cjsj.Files
+    if (temp) {
+      temp.forEach((mitem, mindex) => {
+        if (mitem.Id == item.Id) {
+          index = mindex
+        }
+      })
+      this.setState({ images: this.state.images, modalVisible: true, clickIndex: index })
+    }
+  }
   renderImages() {
+    if (this.state.images.length > 0) {
+      this.state.images = []
+    }
     let t = []
     if (this.state.cjsj.Files && this.state.cjsj.Files.length <= 0) {
       return
@@ -56,16 +77,23 @@ export default class CjsjDetail extends Component {
     let temp = this.state.cjsj.Files
     console.log(typeof (temp))
     if (temp) {
-      temp.map(item => {
+      temp.forEach(item => {
         t.push(this.renderItem(item))
+        this.state.images.push({
+          url: 'http://demo.d9tec.com' + item.FilePath,
+          props: {
+            headers: '桥梁信息'
+          },
+        })
       })
       return t
     }
-
   }
   renderItem(item) {
     return (
-      <Image style={styles.avatar} source={{ uri: 'http://demo.d9tec.com' + item.FilePath }} />
+      <TouchableOpacity key={item.Id} onPress={this.viewImg.bind(this, item)} >
+        <Image style={styles.avatar} source={{ uri: 'http://demo.d9tec.com' + item.FilePath }} />
+      </TouchableOpacity>
     );
   }
   render() {
@@ -114,6 +142,12 @@ export default class CjsjDetail extends Component {
           <View style={styles.images}>
             {this.renderImages()}
           </View>
+          <Modal onRequestClose={this._closeModal.bind(this)} visible={this.state.modalVisible} transparent={true}>
+            <TouchableOpacity style={styles.modalClose} onPress={() => { this._closeModal() }}>
+              <Image style={{ width: 25, height: 25 }} source={require('../images/close.png')} />
+            </TouchableOpacity>
+            <ImageViewer index={this.state.clickIndex} saveToLocalByLongPress={false} imageUrls={this.state.images} />
+          </Modal>
         </View>
       </ScrollView >
     )
@@ -197,5 +231,13 @@ const styles = StyleSheet.create({
     height: 100,
     marginRight: 5,
     marginBottom: 5,
+  },
+  modalClose: {
+    position: 'absolute',
+    zIndex: 9999,
+    left: 20,
+    top: 30,
+    width: 25,
+    height: 25,
   }
 })
